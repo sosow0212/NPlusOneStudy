@@ -1,13 +1,16 @@
 package com.example.nplusone;
 
 import static com.example.nplusone.factory.MemberFactory.createMember;
-import static com.example.nplusone.factory.MemberFactory.createMemberForQuery;
 import static com.example.nplusone.factory.PostFactory.createPost;
+import static org.mockito.Mockito.verify;
 
 import com.example.nplusone.domain.Member;
 import com.example.nplusone.domain.Post;
+import com.example.nplusone.dto.post.PostSaveRequestDto;
 import com.example.nplusone.repository.MemberRepository;
 import com.example.nplusone.repository.PostRepository;
+import com.example.nplusone.service.MemberService;
+import com.example.nplusone.service.PostService;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -21,13 +24,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class QueryTest {
 
     @Autowired
-    private PostRepository postRepository;
+    PostRepository postRepository;
 
     @Autowired
     MemberRepository memberRepository;
 
-    @After
-    public void reset() {
+    @Autowired
+    PostService postService;
+
+    @Autowired
+    MemberService memberService;
+
+//    @After
+    public void cleanAll() {
         memberRepository.deleteAll();
         postRepository.deleteAll();
     }
@@ -36,11 +45,11 @@ public class QueryTest {
     @DisplayName("N+1 테스트")
     public void test() {
         // given
-        Member member = createMemberForQuery();
-        Post post = createPost(member);
+        Member member = createMember();
 
         // when
-        postRepository.save(post);
+        memberRepository.save(member);
+        member.addPosts(createPost(member));
 
         // then
     }
